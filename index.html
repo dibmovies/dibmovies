@@ -95,11 +95,11 @@ async function loadTrending() {
     try {
 
         const movieRes = await fetch(
-            https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}
+            `https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`
         );
 
         const tvRes = await fetch(
-            https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}
+            `https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}`
         );
 
         const movies = await movieRes.json();
@@ -129,7 +129,7 @@ function showItems(items){
         const type = item.title ? "فيلم" : "مسلسل";
 
         const poster = item.poster_path
-            ? https://image.tmdb.org/t/p/w500${item.poster_path}
+            ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
             : "https://via.placeholder.com/500x750?text=No+Image";
 
         container.innerHTML += `
@@ -154,7 +154,7 @@ searchInput.addEventListener("input", async () => {
     try {
 
         const res = await fetch(
-            https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}
+            `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}`
         );
 
         const data = await res.json();
