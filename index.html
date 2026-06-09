@@ -72,6 +72,7 @@ header{
 }
 </style>
 </head>
+
 <body>
 
 <header>🎬 DibMovies</header>
@@ -88,45 +89,61 @@ const API_KEY = "0fcd7a82dc539b605c2eaf86105ad7f2";
 const container = document.getElementById("movies");
 const searchInput = document.getElementById("search");
 
-async function loadTrending(){
-    container.innerHTML = "";
+async function loadTrending() {
+    container.innerHTML = "<h2>جاري تحميل الأفلام...</h2>";
 
-    const movieRes = await fetch(
-    https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY});
+    try {
 
-    const tvRes = await fetch(
-    https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY});
+        const movieRes = await fetch(
+            https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}
+        );
 
-    const movies = await movieRes.json();
-    const tv = await tvRes.json();
+        const tvRes = await fetch(
+            https://api.themoviedb.org/3/trending/tv/week?api_key=${API_KEY}
+        );
 
-    const all = [...movies.results, ...tv.results];
+        const movies = await movieRes.json();
+        const tv = await tvRes.json();
 
-    showItems(all);
+        const all = [...movies.results, ...tv.results];
+
+        showItems(all);
+
+    } catch(error) {
+
+        console.error(error);
+
+        container.innerHTML =
+        "<h2 style='text-align:center'>حدث خطأ أثناء تحميل البيانات</h2>";
+    }
 }
 
 function showItems(items){
+
     container.innerHTML = "";
 
-    items.forEach(item=>{
+    items.forEach(item => {
+
         const title = item.title || item.name;
 
         const type = item.title ? "فيلم" : "مسلسل";
 
         const poster = item.poster_path
-        ? https://image.tmdb.org/t/p/w500${item.poster_path}
-        : "https://via.placeholder.com/500x750?text=No+Image";
+            ? https://image.tmdb.org/t/p/w500${item.poster_path}
+            : "https://via.placeholder.com/500x750?text=No+Image";
 
         container.innerHTML += `
         <div class="card">
-            <img src="${poster}">
+            <img src="${poster}" alt="${title}">
             <h3>${title}</h3>
             <div class="type">${type}</div>
-        </div>`;
+        </div>
+        `;
     });
 }
 
-searchInput.addEventListener("input", async ()=>{
+searchInput.addEventListener("input", async () => {
+
     const q = searchInput.value.trim();
 
     if(q.length < 2){
@@ -134,17 +151,25 @@ searchInput.addEventListener("input", async ()=>{
         return;
     }
 
-    const res = await fetch(
-    https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}
-    );
+    try {
 
-    const data = await res.json();
+        const res = await fetch(
+            https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(q)}
+        );
 
-    showItems(
-        data.results.filter(
-            item => item.media_type === "movie" || item.media_type === "tv"
-        )
-    );
+        const data = await res.json();
+
+        const results = data.results.filter(
+            item =>
+                item.media_type === "movie" ||
+                item.media_type === "tv"
+        );
+
+        showItems(results);
+
+    } catch(error) {
+        console.error(error);
+    }
 });
 
 loadTrending();
